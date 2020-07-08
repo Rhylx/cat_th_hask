@@ -1,0 +1,119 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[english]{babel} % for french
+\usepackage[T1]{fontenc} % for accents
+\usepackage[usestackEOL]{stackengine} % to be able to add the name of the teacher in the right corner
+\usepackage{mathtools,amssymb, amsthm, stmaryrd, eufrak} % maths packages
+\usepackage[backend=biber]{biblatex} % bibliography
+\addbibresource{uni.bib} %bibliography file
+\usepackage{graphicx, subfig} %for inserting figures
+\usepackage{tikz, tikz-cd} %to make diagrams
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=blue,
+}
+\usepackage{enumitem} %to enumerate stuff
+\usepackage{minted}
+
+\author{Raphaël Paegelow}
+\title{diag :: a -> (a,a) : }
+\begin{document}
+
+\theoremstyle{definition}
+\newtheorem{deff}{Définition}
+\newtheorem{nota}{Notation}
+
+\theoremstyle{remark}
+\newtheorem{rmq}{Remarque}
+\newtheorem{ex}{Exemple}
+
+\theoremstyle{plain}
+
+\newtheorem{thm}{Théorème}
+\newtheorem{prop}{Proposition}
+\newtheorem*{lemme}{Lemme}
+\newtheorem{fait}{Fait}
+\newtheorem*{conj}{Conjecture}
+
+
+\maketitle
+\begin{center}
+\textbf{diag funtion\\
+	Adjunctions and monads
+}
+\end{center}
+
+First of all, here is a remainder of James implementation:
+
+
+\begin{minted}[frame=single, escapeinside=||]{haskell}
+diag :: a -> (a, a)
+diag = join (,)
+
+join :: Monad m => m (m a) -> m a
+
+m = (e ->)
+m = (^e)
+
+join :: (e -> e -> a) -> e -> a
+join f e = f e e
+
+(,) :: a -> b -> (a, b)
+\end{minted}
+The main question here is how is that code related to the \textbf{Reader Monad} and can we interpret this code just as one of the two functors from the adjunction giving rise to this monad ?\\
+Here is a remainder of what the \textbf{Reader Monad} is doing.\\
+Let us fix $e \in \textbf{Set}$.
+\begin{equation*}
+\begin{split}
+R_e:
+\begin{array}{ccc}
+Set & \to & Set\\
+a & \mapsto & \{f: e \to a \}\\
+\end{array}
+\end{split}
+\end{equation*}
+With that in mind it is clear that $join: m(m x) \to m(x)$ is exactly the one associated to $m=R_e$. Now let's see which adjunction is hiding behind $R_e$.\\
+\\
+In fact we have to consider the slice category : $\textbf{Set/r}$ where $r \in \textbf{Set}$. This category has as objects all pairs of $(e,f)$ where $e \in \textbf{Set}$ and $f:e \to r$ and as morphisms functions from $e \to e'$ that commute with the functions to $r$:
+\begin{center}
+\begin{tikzcd}
+e \ar[r, "g"] \ar[d, "f"'] & e' \ar[dl,"f'"]\\
+r
+\end{tikzcd}
+\end{center}
+Now that this is out of the way, here is the adjunction that gives rise to the \textbf{Reader Monad}:
+\begin{center}
+\begin{tikzcd}[column sep=large]
+\textbf{Set} \ar[r,"L"', bend right=50] & \textbf{Set/r}  \ar[l, "R"', bend right=50]
+\end{tikzcd}
+\end{center}
+where :
+\begin{equation*}
+\begin{split}
+\begin{array}{ccc}
+L:
+\textbf{Set}  & \to & \textbf{Set/r} \\
+a & \mapsto & ((a,r),p_2:(a,r) \to r)\\
+\\
+\\
+R:
+\textbf{Set/r}  & \to & \textbf{Set} \\
+(a,f) & \mapsto & \{g:r \to a | f \circ g=id_r\}\\
+\end{array}
+\end{split}
+\end{equation*}
+Now there remains to see why $R_e=R \circ L$. Let's take $r=e$.\\ So consider $a \in \textbf{Set}$. $L(a)=((a,e),p_2)$.\\
+Moreover, $R((a,e),p_2)=\{g:e \to (a,e) | p_2(g(x))=x, \forall x \in e\}$.\\ Such a $g=(g_1,g_2)$ and the condition is exactly that $g_2 = id_e$ meaning that only $g_1:e \to a$ is meaningful which is exactly what we wanted. There remains to check that it is behaving well on morphisms...\\
+So here we have it.\\
+To conclude let's say something about the inital implementation.\\
+$join$ function is in fact just $R\circ \epsilon \circ L$ where $\epsilon: L\circ R \to Id$ the counit of the adjunction.
+
+
+
+
+
+
+\noindent The idea is extracted from this \href{http://blog.higher-order.com/blog/2015/09/30/the-adjunction-that-induces-the-reader-monad/}{\textbf{blog post}}.
+\end{document}
