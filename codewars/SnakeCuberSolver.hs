@@ -10,11 +10,10 @@ isoutside (a, b, c) = foldl (&&) True (map (isBetween (0, n)) [a, b, c])
 
 
 solve_ext :: [Int] -> Maybe [((Int, Int, Int), Int)]
-solve_ext [] =
-solve_ext 0::xs =
-solve_ext 1::xs =
-
+solve_ext [] =  Just []
+solve_ext x::[] = Just [(n,n,n),x)]
+solve_ext x::xs =
 
 solve :: [Int] -> Maybe [(Int, Int, Int)]
-solve = map first >>= solve_ext
+solve l = fmap (map fst) (solve_ext l)
 

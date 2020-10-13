@@ -106,14 +106,15 @@ R:
 \end{equation*}
 Now there remains to see why $R_e=R \circ L$. Let's take $r=e$.\\ So consider $a \in \textbf{Set}$. $L(a)=((a,e),p_2)$.\\
 Moreover, $R((a,e),p_2)=\{g:e \to (a,e) | p_2(g(x))=x, \forall x \in e\}$.\\ Such a $g=(g_1,g_2)$ and the condition is exactly that $g_2 = id_e$ meaning that only $g_1:e \to a$ is meaningful which is exactly what we wanted. There remains to check that it is behaving well on morphisms...\\
-So here we have it.\\
+So here we have it (the idea is extracted from this \href{http://blog.higher-order.com/blog/2015/09/30/the-adjunction-that-induces-the-reader-monad/}{\textbf{blog post}}).\\
 To conclude let's say something about the inital implementation.\\
-$join$ function is in fact just $R\circ \epsilon \circ L$ where $\epsilon: L\circ R \to Id$ the counit of the adjunction.
+$join$ function is in fact just $R\circ \epsilon \circ L$ where $\epsilon: L\circ R \to Id$ the counit of the adjunction. The global picture is the following:
 
-
-
-
-
-
-\noindent The idea is extracted from this \href{http://blog.higher-order.com/blog/2015/09/30/the-adjunction-that-induces-the-reader-monad/}{\textbf{blog post}}.
+\begin{center}
+\begin{tikzcd}[column sep=large]
+\textbf{Set $\times$ Set} \ar[r,"P"', bend right=50] & \textbf{Set} \ar[l, "\Delta"', bend right=50] \ar[r,"L"', bend right=50] & \textbf{Set/r}  \ar[l, "R"', bend right=50]
+\end{tikzcd}
+\end{center}
+where $P$ is the product functor and $\Delta$ is the functor we are trying to understand.
+According to the implementation let's understand why $\Delta=R\circ \epsilon \circ L \circ P$.
 \end{document}
